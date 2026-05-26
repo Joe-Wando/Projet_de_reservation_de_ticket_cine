@@ -7,7 +7,7 @@ export default function App(){
       <Routes>
         <Route path="/" element ={<Acceuil/>}/>
         <Route path="/Films" element={<Films />}/>
-        <Route path="/Reservation" element={<Reservation />}/>      
+        <Route path="/reservation/:id" element={<Reservation />} />     
       </Routes>
 
 )
