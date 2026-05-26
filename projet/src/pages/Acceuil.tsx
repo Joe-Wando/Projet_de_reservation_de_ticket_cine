@@ -7,6 +7,5 @@ return (
         <Link to="/Films">Voir les films</Link>
      </div>
 
-
 )
 }
