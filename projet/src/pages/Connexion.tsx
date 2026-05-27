@@ -1,14 +1,18 @@
 import { useState } from 'react'
 import { auth } from '../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
 
 export default function Connexion() {
   const [email, setEmail] = useState("")
   const [motDePasse, setMotDePasse] = useState("")
+const navigate = useNavigate()
 
 async function connecter() {
   await signInWithEmailAndPassword(auth, email, motDePasse)
+  navigate('/films')
 }
+
 
 return (
   <div>
