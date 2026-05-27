@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom"
 import films from "../films" 
 import { useState } from "react"
+import { db } from "../firebase"
+import { collection, addDoc } from "firebase/firestore"
 
 export default function Reservation() {
   const { id } = useParams()
@@ -8,7 +10,13 @@ const film = films.find(function(f) {
   return f.id === Number(id)
 })
 const [reserve, setReserve] = useState(false)
-function confirmerReservation() {
+
+async function confirmerReservation() {
+  await addDoc(collection(db, "reservations"), {
+    filmId: id,
+    filmTitre: film?.titre,
+    date: new Date().toLocaleDateString()
+  })
   setReserve(true)
 }
 
