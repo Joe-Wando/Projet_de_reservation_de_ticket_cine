@@ -4,6 +4,7 @@ import Films from './pages/Films'
 import Reservation from './pages/Reservation'
 import Inscription from './pages/Inscription'
 import Connexion from './pages/Connexion'
+import Dashboard from './pages/Dashboard'
 import ReinitialisationMotDePasse from './pages/ReinitialisationMotDePasse'
 
 export default function App(){
@@ -15,6 +16,7 @@ export default function App(){
       <Route path="/inscription" element={<Inscription />} />
 <Route path="/connexion" element={<Connexion />} />
 <Route path="/reinitialisation" element={<ReinitialisationMotDePasse />} />
+<Route path="/dashboard" element={<Dashboard />} />
       </Routes>
 
 )
