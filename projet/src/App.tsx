@@ -4,6 +4,7 @@ import Films from './pages/Films'
 import Reservation from './pages/Reservation'
 import Inscription from './pages/Inscription'
 import Connexion from './pages/Connexion'
+import ReinitialisationMotDePasse from './pages/ReinitialisationMotDePasse'
 
 export default function App(){
   return(
@@ -13,6 +14,7 @@ export default function App(){
         <Route path="/reservation/:id" element={<Reservation />} />   
       <Route path="/inscription" element={<Inscription />} />
 <Route path="/connexion" element={<Connexion />} />
+<Route path="/reinitialisation" element={<ReinitialisationMotDePasse />} />
       </Routes>
 
 )
