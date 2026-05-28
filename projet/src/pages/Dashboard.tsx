@@ -4,46 +4,45 @@ import { db } from '../firebase'
 import { collection, query, where, getDocs } from 'firebase/firestore'
 
 export default function Dashboard() {
-  const [utilisateur, setUtilisateur] = useState(null)
+  const [utilisateur, setUtilisateur] = useState<any>(null)
+  const [reservations, setReservations] = useState<any[]>([])
 
-useEffect(function() {
-  const desabonner = auth.onAuthStateChanged(function(user) {
-    setUtilisateur(user)
-  })
-  return desabonner
-}, [])
-
-  const [reservations, setReservations] = useState([])
-
-useEffect(function() {
-  async function chargerReservations() {
-    const requete = query(
-      collection(db, 'reservations'),
-      where('email', '==', utilisateur?.email)
-    )
-    const resultats = await getDocs(requete)
-    const liste = resultats.docs.map(function(doc) {
-      return { id: doc.id, ...doc.data() }
+  useEffect(function() {
+    const desabonner = auth.onAuthStateChanged(function(user) {
+      setUtilisateur(user)
     })
-    setReservations(liste)
-  }
-  chargerReservations()
-}, [utilisateur])
+    return desabonner
+  }, [])
+
+  useEffect(function() {
+    async function chargerReservations() {
+      const requete = query(
+        collection(db, 'reservations'),
+        where('email', '==', utilisateur?.email)
+      )
+      const resultats = await getDocs(requete)
+      const liste = resultats.docs.map(function(doc) {
+        return { id: doc.id, ...doc.data() }
+      })
+      setReservations(liste)
+    }
+    chargerReservations()
+  }, [utilisateur])
 
   return (
-  <div>
-    <h1>Bonjour {utilisateur?.email} </h1>
+    <div>
+      <h1>Bonjour {utilisateur?.email} </h1>
 
-    <h2>Mes réservations</h2>
+      <h2>Mes réservations</h2>
 
-    {reservations.map(function(reservation) {
-      return (
-        <div key={reservation.id}>
-          <p>Film : {reservation.filmTitre}</p>
-          <p>Date : {reservation.date}</p>
-        </div>
-      )
-    })}
-  </div>
-)
+      {reservations.map(function(reservation) {
+        return (
+          <div key={reservation.id}>
+            <p>Film : {reservation.filmTitre}</p>
+            <p>Date : {reservation.date}</p>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
