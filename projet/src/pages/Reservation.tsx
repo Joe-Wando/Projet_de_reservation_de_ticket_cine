@@ -8,38 +8,47 @@ import emailjs from "@emailjs/browser"
 export default function Reservation() {
   const { id } = useParams()
 
-  const film = films.find(function(f) {
-    return f.id === Number(id)
-  })
+  const film = films.find(f => f.id === Number(id))
 
   const [reserve, setReserve] = useState(false)
   const [nom, setNom] = useState("")
   const [prenom, setPrenom] = useState("")
+  const [erreur, setErreur] = useState("")
+  const [chargement, setChargement] = useState(false)
 
   async function confirmerReservation() {
-    await addDoc(collection(db, "reservations"), {
-      filmId: id,
-      filmTitre: film?.titre,
-      nom: nom,
-      prenom: prenom,
-      email: auth.currentUser?.email,
-      date: new Date().toLocaleDateString()
-    })
+    setErreur("")
+    setChargement(true)
 
-    await emailjs.send(
-      "service_4zcakd1",
-      "template_mahkm92",
-      {
+    try {
+      await addDoc(collection(db, "reservations"), {
+        filmId: id,
+        filmTitre: film?.titre,
         nom: nom,
         prenom: prenom,
         email: auth.currentUser?.email,
-        film_titre: film?.titre,
         date: new Date().toLocaleDateString()
-      },
-      "LXcpyZm3pWLch4zM0"
-    )
+      })
 
-    setReserve(true)
+      await emailjs.send(
+        "service_4zcakd1",
+        "template_mahkm92",
+        {
+          nom: nom,
+          prenom: prenom,
+          email: auth.currentUser?.email,
+          film_titre: film?.titre,
+          date: new Date().toLocaleDateString()
+        },
+        "LXcpyZm3pWLch4zM0"
+      )
+
+      setReserve(true)
+    } catch (e: any) {
+      setErreur("La réservation a échoué. Réessayez.")
+    } finally {
+      setChargement(false)
+    }
   }
 
   return (
@@ -47,24 +56,18 @@ export default function Reservation() {
       <h1>Réservation</h1>
       <p>Vous avez choisi : {film?.titre}</p>
 
+      {erreur && <p style={{ color: "red" }}>{erreur}</p>}
+
       {reserve ? (
-        <p> Réservation confirmée !</p>
+        <p>Réservation confirmée !</p>
       ) : (
         <div>
-          <input
-            type="text"
-            placeholder="Votre nom"
-            value={nom}
-            onChange={function(e) { setNom(e.target.value) }}
-          />
-          <input
-            type="text"
-            placeholder="Votre prénom"
-            value={prenom}
-            onChange={function(e) { setPrenom(e.target.value) }}
-          />
-          <button onClick={confirmerReservation}>
-            Confirmer la réservation
+          <input type="text" placeholder="Votre nom"
+            value={nom} onChange={e => setNom(e.target.value)} />
+          <input type="text" placeholder="Votre prénom"
+            value={prenom} onChange={e => setPrenom(e.target.value)} />
+          <button onClick={confirmerReservation} disabled={chargement}>
+            {chargement ? "Réservation en cours..." : "Confirmer la réservation"}
           </button>
         </div>
       )}

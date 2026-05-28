@@ -6,35 +6,39 @@ import { useNavigate } from 'react-router-dom'
 export default function Connexion() {
   const [email, setEmail] = useState("")
   const [motDePasse, setMotDePasse] = useState("")
-const navigate = useNavigate()
+  const [erreur, setErreur] = useState("")
+  const [chargement, setChargement] = useState(false)
+  const navigate = useNavigate()
 
-async function connecter() {
-  await signInWithEmailAndPassword(auth, email, motDePasse)
- navigate('/dashboard')
-}
+  async function connecter() {
+    setErreur("")
+    setChargement(true)
 
+    try {
+      await signInWithEmailAndPassword(auth, email, motDePasse)
+      navigate('/dashboard')
+    } catch (e: any) {
+      setErreur("Email ou mot de passe incorrect.")
+    } finally {
+      setChargement(false)
+    }
+  }
 
-return (
-  <div>
-    <h1>Connexion</h1>
+  return (
+    <div>
+      <h1>Connexion</h1>
 
-    <input
-      type="email"
-      placeholder="Votre email"
-      value={email}
-      onChange={function(e) { setEmail(e.target.value) }}
-    />
+      {erreur && <p style={{ color: "red" }}>{erreur}</p>}
 
-    <input
-      type="password"
-      placeholder="Votre mot de passe"
-      value={motDePasse}
-      onChange={function(e) { setMotDePasse(e.target.value) }}
-    />
+      <input type="email" placeholder="Votre email"
+        value={email} onChange={e => setEmail(e.target.value)} />
 
-    <button onClick={connecter}>
-      Se connecter
-    </button>
-  </div>
-)
+      <input type="password" placeholder="Votre mot de passe"
+        value={motDePasse} onChange={e => setMotDePasse(e.target.value)} />
+
+      <button onClick={connecter} disabled={chargement}>
+        {chargement ? "Connexion..." : "Se connecter"}
+      </button>
+    </div>
+  )
 }

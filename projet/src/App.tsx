@@ -6,6 +6,7 @@ import Inscription from './pages/Inscription'
 import Connexion from './pages/Connexion'
 import Dashboard from './pages/Dashboard'
 import ReinitialisationMotDePasse from './pages/ReinitialisationMotDePasse'
+import RouteProtegee from './composants/RouteProtegee'
 
 export default function App(){
   return(
@@ -16,7 +17,11 @@ export default function App(){
       <Route path="/inscription" element={<Inscription />} />
 <Route path="/connexion" element={<Connexion />} />
 <Route path="/reinitialisation" element={<ReinitialisationMotDePasse />} />
-<Route path="/dashboard" element={<Dashboard />} />
+<Route path="/dashboard" element={
+  <RouteProtegee>
+    <Dashboard />
+  </RouteProtegee>
+} />
       </Routes>
 
 )

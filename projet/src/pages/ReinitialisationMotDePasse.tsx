@@ -5,28 +5,37 @@ import { sendPasswordResetEmail } from 'firebase/auth'
 export default function ReinitialisationMotDePasse() {
   const [email, setEmail] = useState("")
   const [envoye, setEnvoye] = useState(false)
+  const [erreur, setErreur] = useState("")
+  const [chargement, setChargement] = useState(false)
 
   async function reinitialiser() {
-    await sendPasswordResetEmail(auth, email)
-    setEnvoye(true)
+    setErreur("")
+    setChargement(true)
+
+    try {
+      await sendPasswordResetEmail(auth, email)
+      setEnvoye(true)
+    } catch (e: any) {
+      setErreur("Aucun compte trouvé avec cet email.")
+    } finally {
+      setChargement(false)
+    }
   }
 
   return (
     <div>
       <h1>Réinitialisation du mot de passe</h1>
 
+      {erreur && <p style={{ color: "red" }}>{erreur}</p>}
+
       {envoye ? (
-        <p>Un email de réinitialisation a été envoyé à votre adresse email !</p>
+        <p>Un email de réinitialisation a été envoyé !</p>
       ) : (
         <div>
-          <input
-            type="email"
-            placeholder="Votre email"
-            value={email}
-            onChange={function(e) { setEmail(e.target.value) }}
-          />
-          <button onClick={reinitialiser}>
-            Envoyer le lien
+          <input type="email" placeholder="Votre email"
+            value={email} onChange={e => setEmail(e.target.value)} />
+          <button onClick={reinitialiser} disabled={chargement}>
+            {chargement ? "Envoi..." : "Envoyer le lien"}
           </button>
         </div>
       )}
