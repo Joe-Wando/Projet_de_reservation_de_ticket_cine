@@ -4,6 +4,7 @@ import { useState } from "react"
 import { db } from "../firebase"
 import { collection, addDoc } from "firebase/firestore"
 import emailjs from "@emailjs/browser"
+import { auth } from '../firebase'
 
 export default function Reservation() {
   const { id } = useParams()

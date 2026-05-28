@@ -10,7 +10,7 @@ const navigate = useNavigate()
 
 async function connecter() {
   await signInWithEmailAndPassword(auth, email, motDePasse)
-  navigate('/films')
+ navigate('/dashboard')
 }
 
 

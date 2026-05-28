@@ -4,7 +4,15 @@ import { db } from '../firebase'
 import { collection, query, where, getDocs } from 'firebase/firestore'
 
 export default function Dashboard() {
-  const utilisateur = auth.currentUser
+  const [utilisateur, setUtilisateur] = useState(null)
+
+useEffect(function() {
+  const desabonner = auth.onAuthStateChanged(function(user) {
+    setUtilisateur(user)
+  })
+  return desabonner
+}, [])
+
   const [reservations, setReservations] = useState([])
 
 useEffect(function() {
@@ -20,7 +28,7 @@ useEffect(function() {
     setReservations(liste)
   }
   chargerReservations()
-}, [])
+}, [utilisateur])
 
   return (
   <div>
