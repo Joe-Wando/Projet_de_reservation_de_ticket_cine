@@ -5,7 +5,7 @@ import { useFilms } from "../hooks/useFilms"
 export default function Acceuil() {
   const { films, chargement } = useFilms()
   const [filmHero, setFilmHero] = useState<any>(null)
-  const [scrolled, setScrolled] = useState(false)
+ /* const [scrolled, setScrolled] = useState(false)  */
 
   useEffect(function() {
     if (films.length > 0) {
@@ -15,7 +15,7 @@ export default function Acceuil() {
 
   useEffect(function() {
     function handleScroll() {
-      setScrolled(window.scrollY > 50)
+      /* setScrolled(window.scrollY > 50) */
     }
     window.addEventListener("scroll", handleScroll)
     return function() { window.removeEventListener("scroll", handleScroll) }
