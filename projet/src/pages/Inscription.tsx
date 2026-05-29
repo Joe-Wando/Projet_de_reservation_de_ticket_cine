@@ -20,14 +20,14 @@ export default function Inscription() {
       await updateProfile(resultat.user, {
         displayName: prenom + " " + nom
       })
-      navigate('/dashboard')
+      navigate('/')
     } catch (e: any) {
       if (e.code === "auth/email-already-in-use") {
-        setErreur("Cet email est déjà utilisé.")
+        setErreur("Cet email est deja utilise.")
       } else if (e.code === "auth/weak-password") {
-        setErreur("Le mot de passe doit faire au moins 6 caractères.")
+        setErreur("Le mot de passe doit faire au moins 6 caracteres.")
       } else {
-        setErreur("Une erreur est survenue. Réessayez.")
+        setErreur("Une erreur est survenue. Reessayez.")
       }
     } finally {
       setChargement(false)
@@ -35,97 +35,76 @@ export default function Inscription() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#050B18' }}>
+    <div className="min-h-screen flex items-center justify-center px-6"
+      style={{ backgroundColor: "#050B18" }}>
 
-      {/* Gauche — Illustration */}
-      <div className="hidden md:flex w-1/2 flex-col items-center justify-center p-12 text-center"
-        style={{ background: 'linear-gradient(135deg, #0D1526, #7B61FF20)' }}>
-        <h2 className="text-3xl font-bold text-white mb-4">
-          Rejoignez SENECINE
-        </h2>
-        <p className="text-lg" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          Créez votre compte et réservez vos billets en quelques secondes.
+      <div className="w-full max-w-md rounded-2xl p-10 shadow-2xl"
+        style={{ backgroundColor: "#0D1526", border: "1px solid #1A2940" }}>
+
+        <p className="text-2xl font-extrabold tracking-wider mb-8"
+          style={{ color: "#00D4FF" }}>
+          SENECINE
         </p>
 
-        <div className="mt-10 flex gap-4">
-          <div className="backdrop-blur rounded-xl p-4 text-left w-36"
-            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid #1A2940' }}>
-            <p className="text-white font-semibold text-sm">Films africains</p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>et internationaux</p>
-          </div>
-          <div className="backdrop-blur rounded-xl p-4 text-left w-36"
-            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid #1A2940' }}>
-            <p className="text-white font-semibold text-sm">Confirmation</p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>par email</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Droite — Formulaire */}
-      <div className="flex flex-col justify-center w-full md:w-1/2 px-10 py-16">
-
-        <Link to="/" className="text-2xl font-extrabold mb-10" style={{ color: '#00D4FF' }}>
-          SENECINE
-        </Link>
-
-        <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Bienvenue !</p>
-        <h1 className="text-4xl font-bold text-white mb-8">Inscription</h1>
+        <p className="text-sm mb-1" style={{ color: "#8899AA" }}>Bienvenue !</p>
+        <h1 className="text-3xl font-bold text-white mb-8">Inscription</h1>
 
         {erreur && (
-          <div className="text-sm px-4 py-3 rounded-xl mb-6 border"
-            style={{ backgroundColor: '#FF4D4D10', borderColor: '#FF4D4D30', color: '#FF4D4D' }}>
+          <div className="px-4 py-3 rounded-xl mb-6 text-sm"
+            style={{ backgroundColor: "#FF000010", border: "1px solid #FF000030", color: "#FF6B6B" }}>
             {erreur}
           </div>
         )}
 
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
-            <label className="text-sm mb-1 block" style={{ color: '#8899AA' }}>Prénom</label>
+            <label className="text-sm mb-1 block" style={{ color: "#8899AA" }}>Prenom</label>
             <input type="text" placeholder="Moussa"
               value={prenom} onChange={e => setPrenom(e.target.value)}
               className="w-full text-white px-4 py-3 rounded-xl focus:outline-none transition"
-              style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }} />
+              style={{ backgroundColor: "#050B18", border: "1px solid #1A2940" }} />
           </div>
           <div className="flex-1">
-            <label className="text-sm mb-1 block" style={{ color: '#8899AA' }}>Nom</label>
+            <label className="text-sm mb-1 block" style={{ color: "#8899AA" }}>Nom</label>
             <input type="text" placeholder="Diallo"
               value={nom} onChange={e => setNom(e.target.value)}
               className="w-full text-white px-4 py-3 rounded-xl focus:outline-none transition"
-              style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }} />
+              style={{ backgroundColor: "#050B18", border: "1px solid #1A2940" }} />
           </div>
         </div>
 
         <div className="mb-4">
-          <label className="text-sm mb-1 block" style={{ color: '#8899AA' }}>Email</label>
+          <label className="text-sm mb-1 block" style={{ color: "#8899AA" }}>Email</label>
           <input type="email" placeholder="votre@email.com"
             value={email} onChange={e => setEmail(e.target.value)}
             className="w-full text-white px-4 py-3 rounded-xl focus:outline-none transition"
-            style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }} />
+            style={{ backgroundColor: "#050B18", border: "1px solid #1A2940" }} />
         </div>
 
         <div className="mb-8">
-          <label className="text-sm mb-1 block" style={{ color: '#8899AA' }}>Mot de passe</label>
+          <label className="text-sm mb-1 block" style={{ color: "#8899AA" }}>Mot de passe</label>
           <input type="password" placeholder="••••••••"
             value={motDePasse} onChange={e => setMotDePasse(e.target.value)}
             className="w-full text-white px-4 py-3 rounded-xl focus:outline-none transition"
-            style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }} />
+            style={{ backgroundColor: "#050B18", border: "1px solid #1A2940" }} />
         </div>
 
         <button onClick={inscrire} disabled={chargement}
           className="w-full py-3 rounded-xl font-semibold text-lg transition disabled:opacity-50"
-          style={{ backgroundColor: '#00D4FF', color: '#050B18' }}>
+          style={{ backgroundColor: "#00D4FF", color: "#050B18" }}>
           {chargement ? "Inscription..." : "S'inscrire"}
         </button>
 
-        <p className="text-sm text-center mt-6" style={{ color: '#8899AA' }}>
-          Déjà un compte ?{" "}
-          <Link to="/connexion" className="font-semibold hover:underline" style={{ color: '#00D4FF' }}>
+        <p className="text-sm text-center mt-6" style={{ color: "#8899AA" }}>
+          Deja un compte ?{" "}
+          <Link to="/connexion"
+            className="font-semibold hover:underline"
+            style={{ color: "#00D4FF" }}>
             Se connecter
           </Link>
         </p>
 
       </div>
-
     </div>
   )
 }

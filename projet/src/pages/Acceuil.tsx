@@ -24,26 +24,7 @@ export default function Acceuil() {
   return (
     <div style={{ backgroundColor: "#050B18" }} className="text-white min-h-screen">
 
-      {/* NAVBAR */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "" : "bg-transparent"}`}
-        style={scrolled ? { backgroundColor: "#0D1526", borderBottom: "1px solid #1A2940" } : {}}>
-        <div className="flex items-center justify-between px-8 py-4">
-          <Link to="/" className="text-2xl font-extrabold tracking-wider"
-            style={{ color: "#00D4FF" }}>
-            SENECINE
-          </Link>
-          <div className="flex gap-6 items-center">
-            <Link to="/" className="text-sm text-gray-300 hover:text-white transition">Accueil</Link>
-            <Link to="/Films" className="text-sm text-gray-300 hover:text-white transition">Films</Link>
-            <Link to="/connexion" className="text-sm text-gray-300 hover:text-white transition">Connexion</Link>
-            <Link to="/inscription"
-              className="text-sm px-5 py-2 rounded font-semibold transition"
-              style={{ backgroundColor: "#00D4FF", color: "#050B18" }}>
-              S'inscrire
-            </Link>
-          </div>
-        </div>
-      </nav>
+
 
       {/* HERO */}
       {filmHero && (

@@ -1,5 +1,6 @@
-import { Routes, Route } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { auth } from './firebase'
 import Navbar from './composants/Navbar'
 import Acceuil from './pages/Acceuil'
 import Films from './pages/Films'
@@ -11,27 +12,58 @@ import ReinitialisationMotDePasse from './pages/ReinitialisationMotDePasse'
 import RouteProtegee from './composants/RouteProtegee'
 
 export default function App() {
-  const location = useLocation()
+  const [connecte, setConnecte] = useState<boolean | null>(null)
 
-  // Sur la landing page, pas de navbar externe
-  const sansNavbar = location.pathname === "/"
+  useEffect(function() {
+    const desabonner = auth.onAuthStateChanged(function(user) {
+      setConnecte(!!user)
+    })
+    return desabonner
+  }, [])
+
+  // On attend la réponse de Firebase avant d'afficher quoi que ce soit
+  if (connecte === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: "#050B18" }}>
+        <p style={{ color: "#8899AA" }}>Chargement...</p>
+      </div>
+    )
+  }
 
   return (
     <>
-      {!sansNavbar && <Navbar />}
+      {/* Navbar uniquement si connecté et pas sur la landing */}
+      {connecte && <Navbar />}
 
       <Routes>
-        <Route path="/" element={<Acceuil />} />
-        <Route path="/Films" element={<Films />} />
-        <Route path="/reservation/:id" element={<Reservation />} />
-        <Route path="/inscription" element={<Inscription />} />
-        <Route path="/connexion" element={<Connexion />} />
-        <Route path="/reinitialisation" element={<ReinitialisationMotDePasse />} />
-        <Route path="/dashboard" element={
-          <RouteProtegee>
-            <Dashboard />
-          </RouteProtegee>
+        {/* Pages publiques — auth seulement */}
+        <Route path="/connexion" element={
+          connecte ? <Navigate to="/" /> : <Connexion />
         } />
+        <Route path="/inscription" element={
+          connecte ? <Navigate to="/" /> : <Inscription />
+        } />
+        <Route path="/reinitialisation" element={
+          connecte ? <Navigate to="/" /> : <ReinitialisationMotDePasse />
+        } />
+
+        {/* Pages protégées */}
+        <Route path="/" element={
+          connecte ? <Acceuil /> : <Navigate to="/connexion" />
+        } />
+        <Route path="/Films" element={
+          <RouteProtegee><Films /></RouteProtegee>
+        } />
+        <Route path="/reservation/:id" element={
+          <RouteProtegee><Reservation /></RouteProtegee>
+        } />
+        <Route path="/dashboard" element={
+          <RouteProtegee><Dashboard /></RouteProtegee>
+        } />
+
+        {/* Toute autre URL redirige vers connexion */}
+        <Route path="*" element={<Navigate to="/connexion" />} />
       </Routes>
     </>
   )
