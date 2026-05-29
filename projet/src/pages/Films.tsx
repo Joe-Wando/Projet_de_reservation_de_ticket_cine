@@ -23,7 +23,6 @@ export default function Films() {
         <div className="relative max-w-md">
           <span className="absolute left-4 top-1/2 -translate-y-1/2"
             style={{ color: '#8899AA' }}>
-            &#128269;
           </span>
           <input
             type="text"

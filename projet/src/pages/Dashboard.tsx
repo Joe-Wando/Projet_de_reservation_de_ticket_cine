@@ -42,7 +42,7 @@ export default function Dashboard() {
       <div className="mb-10">
         <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Tableau de bord</p>
         <h1 className="text-4xl font-bold">
-          Bonjour {utilisateur?.displayName || utilisateur?.email}
+          Bonjour {utilisateur?.displayName || utilisateur?.name}
         </h1>
         <p className="mt-2" style={{ color: '#8899AA' }}>
           Voici un résumé de votre activité sur SENECINE

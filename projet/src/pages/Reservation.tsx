@@ -53,19 +53,23 @@ export default function Reservation() {
         date: new Date().toLocaleDateString()
       })
 
-      await emailjs.send(
-        "service_4zcakd1", "template_mahkm92",
-        {
-          nom, prenom,
-          email: auth.currentUser?.email,
-          film_titre: film?.titre,
-          nb_places: nbPlaces,
-          horaire, date_seance: dateSeance,
-          numero_ticket: numero,
-          date: new Date().toLocaleDateString()
-        },
-        "LXcpyZm3pWLch4zM0"
-      )
+await emailjs.send(
+  "service_4zcakd1",
+  "template_mahkm92",
+  {
+    nom,
+    prenom,
+    email: auth.currentUser?.email,
+    film_titre: film?.titre,
+    film_affiche: film?.affiche,
+    nb_places: nbPlaces,
+    horaire,
+    date_seance: dateSeance,
+    numero_ticket: numero,
+    date: new Date().toLocaleDateString()
+  },
+  "LXcpyZm3pWLch4zM0"
+)
 
       setReserve(true)
     } catch (e: any) {
@@ -75,31 +79,51 @@ export default function Reservation() {
     }
   }
 
-  async function telechargerTicket() {
-    if (!ticketRef.current) return
-    setTelechargement(true)
 
-    try {
-      const canvas = await html2canvas(ticketRef.current, {
-  backgroundColor: "#0D1526",
-  scale: 2,
-  useCORS: true,        // autorise les images externes
-  allowTaint: false,    // ne permet pas les images non sécurisées
-})
+async function telechargerTicket() {
+  if (!ticketRef.current) return
 
-      const imgData = canvas.toDataURL("image/png")
-      const pdf = new jsPDF("landscape", "mm", "a5")
-      const largeur = pdf.internal.pageSize.getWidth()
-      const hauteur = pdf.internal.pageSize.getHeight()
+  setTelechargement(true)
 
-      pdf.addImage(imgData, "PNG", 0, 0, largeur, hauteur)
-      pdf.save(`billet-${numeroTicket}.pdf`)
-    } catch (e) {
-      console.error("Erreur telechargement", e)
-    } finally {
-      setTelechargement(false)
-    }
+  try {
+
+    // attendre le chargement des images
+    const images = ticketRef.current.querySelectorAll("img")
+
+    await Promise.all(
+      Array.from(images).map((img) => {
+        if (img.complete) return Promise.resolve()
+
+        return new Promise((resolve) => {
+          img.onload = resolve
+          img.onerror = resolve
+        })
+      })
+    )
+
+    const canvas = await html2canvas(ticketRef.current, {
+      backgroundColor: "#0D1526",
+      scale: 2,
+      useCORS: true
+    })
+
+    const imgData = canvas.toDataURL("image/png")
+
+    const pdf = new jsPDF("landscape", "mm", "a5")
+
+    const largeur = pdf.internal.pageSize.getWidth()
+    const hauteur = pdf.internal.pageSize.getHeight()
+
+    pdf.addImage(imgData, "PNG", 0, 0, largeur, hauteur)
+
+    pdf.save(`billet-${numeroTicket}.pdf`)
+
+  } catch (e) {
+    console.error("Erreur telechargement", e)
+  } finally {
+    setTelechargement(false)
   }
+}
 
   if (chargement) {
     return (
@@ -129,12 +153,20 @@ export default function Reservation() {
           style={{ backgroundColor: "#0D1526", border: "1px solid #1A2940" }}>
 
           {/* Gauche — affiche */}
-          <div className="w-2/5 relative">
-            <img src={film?.affiche} alt={film?.titre}
-              className="w-full h-full object-cover" />
-            <div className="absolute inset-0"
-              style={{ background: "linear-gradient(to right, transparent, #0D1526)" }}></div>
-          </div>
+<div className="w-2/5 relative">
+  <img
+    src={film?.affiche}
+    alt={film?.titre}
+    className="w-full h-full object-cover"
+  />
+
+  <div
+    className="absolute inset-0"
+    style={{
+      background: "linear-gradient(to right, transparent, #0D1526)"
+    }}>
+  </div>
+</div>
 
           {/* Ligne pointillee */}
           <div className="relative flex flex-col items-center"
