@@ -9,7 +9,7 @@ export default function Navbar() {
 
   useEffect(function() {
     const desabonner = auth.onAuthStateChanged(function(user) {
-      setConnecte(!!user)  //  !! transforme user en true/false
+      setConnecte(!!user)
     })
     return desabonner
   }, [])
@@ -20,33 +20,28 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="flex items-center justify-between px-8 py-4 bg-gray-900 text-white">
-      
-      {/* Logo */}
-      <Link to="/" className="text-xl font-bold text-red-500">
+    <nav className="bg-black border-b border-gray-800 px-8 py-4 flex items-center justify-between">
+      <Link to="/" className="text-2xl font-extrabold text-red-500 tracking-wider">
         SENECINE
       </Link>
 
-      {/* Liens */}
       <div className="flex gap-6 items-center">
-        <Link to="/" className="hover:text-red-400">Accueil</Link>
-        <Link to="/Films" className="hover:text-red-400">Films</Link>
+        <Link to="/" className="text-sm text-gray-300 hover:text-white transition">Accueil</Link>
+        <Link to="/Films" className="text-sm text-gray-300 hover:text-white transition">Films</Link>
 
         {connecte ? (
-          // Connecté
           <>
-            <Link to="/dashboard" className="hover:text-red-400">Mon espace</Link>
+            <Link to="/dashboard" className="text-sm text-gray-300 hover:text-white transition">Mon espace</Link>
             <button onClick={deconnecter}
-              className="bg-red-500 px-4 py-2 rounded hover:bg-red-600">
-              Déconnexion
+              className="bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded font-semibold transition">
+              Deconnexion
             </button>
           </>
         ) : (
-          //  Non connecté
           <>
-            <Link to="/connexion" className="hover:text-red-400">Connexion</Link>
+            <Link to="/connexion" className="text-sm text-gray-300 hover:text-white transition">Connexion</Link>
             <Link to="/inscription"
-              className="bg-red-500 px-4 py-2 rounded hover:bg-red-600">
+              className="bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded font-semibold transition">
               S'inscrire
             </Link>
           </>

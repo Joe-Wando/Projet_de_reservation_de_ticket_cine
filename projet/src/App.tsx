@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
-import Navbar from './composants/Navbar'        // nouveau
+import { useLocation } from 'react-router-dom'
+import Navbar from './composants/Navbar'
 import Acceuil from './pages/Acceuil'
 import Films from './pages/Films'
 import Reservation from './pages/Reservation'
@@ -10,9 +11,14 @@ import ReinitialisationMotDePasse from './pages/ReinitialisationMotDePasse'
 import RouteProtegee from './composants/RouteProtegee'
 
 export default function App() {
+  const location = useLocation()
+
+  // Sur la landing page, pas de navbar externe
+  const sansNavbar = location.pathname === "/"
+
   return (
     <>
-      <Navbar />   {/* apparaît sur toutes les pages */}
+      {!sansNavbar && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Acceuil />} />
