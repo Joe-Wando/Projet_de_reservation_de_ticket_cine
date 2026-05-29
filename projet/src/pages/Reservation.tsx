@@ -1,206 +1,104 @@
-import { useParams, useNavigate } from "react-router-dom"
-import { useFilms } from "../hooks/useFilms"
+import { useParams } from "react-router-dom"
 import { useState } from "react"
 import { db, auth } from "../firebase"
 import { collection, addDoc } from "firebase/firestore"
 import emailjs from "@emailjs/browser"
+import { useFilms } from "../hooks/useFilms"
 
 export default function Reservation() {
   const { id } = useParams()
-  const naviguer = useNavigate()
-  const { films, chargement } = useFilms()
+  const { films } = useFilms()
 
-  const film = films.find(f => f.id === Number(id))
+  const film = films.find(function(f) {
+    return f.id === Number(id)
+  })
 
   const [reserve, setReserve] = useState(false)
   const [nom, setNom] = useState("")
   const [prenom, setPrenom] = useState("")
-  const [erreur, setErreur] = useState("")
-  const [chargementReservation, setChargementReservation] = useState(false)
-
-  const dateAujourdhui = new Date().toLocaleDateString("fr-FR", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric"
-  })
 
   async function confirmerReservation() {
-    if (!nom || !prenom) {
-      setErreur("Veuillez remplir tous les champs.")
-      return
-    }
-    setErreur("")
-    setChargementReservation(true)
+    await addDoc(collection(db, "reservations"), {
+      filmId: id,
+      filmTitre: film?.titre,
+      nom: nom,
+      prenom: prenom,
+      email: auth.currentUser?.email,
+      date: new Date().toLocaleDateString()
+    })
 
-    try {
-      await addDoc(collection(db, "reservations"), {
-        filmId: id,
-        filmTitre: film?.titre,
-        nom, prenom,
+    await emailjs.send(
+      "service_4zcakd1",
+      "template_mahkm92",
+      {
+        nom: nom,
+        prenom: prenom,
         email: auth.currentUser?.email,
+        film_titre: film?.titre,
         date: new Date().toLocaleDateString()
-      })
-
-      await emailjs.send(
-        "service_4zcakd1", "template_mahkm92",
-        {
-          nom, prenom,
-          email: auth.currentUser?.email,
-          film_titre: film?.titre,
-          date: new Date().toLocaleDateString()
-        },
-        "LXcpyZm3pWLch4zM0"
-      )
-
-      setReserve(true)
-    } catch (e: any) {
-      setErreur("La reservation a echoue. Reessayez.")
-    } finally {
-      setChargementReservation(false)
-    }
-  }
-
-  if (chargement) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <p className="text-gray-400">Chargement du film...</p>
-      </div>
+      },
+      "LXcpyZm3pWLch4zM0"
     )
+
+    setReserve(true)
   }
 
-  // BILLET CONFIRME
-  if (reserve) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-2xl">
-
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white">Reservation confirmee !</h2>
-            <p className="text-gray-400 mt-2">Votre billet a ete envoye par email</p>
-          </div>
-
-          <div className="flex rounded-2xl overflow-hidden shadow-2xl">
-            <div className="w-1/2 relative">
-              <img src={film?.affiche} alt={film?.titre}
-                className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
-                <p className="text-white/60 text-xs uppercase tracking-widest mb-1">SENECINE</p>
-                <h3 className="text-xl font-extrabold text-white">{film?.titre}</h3>
-                <p className="text-white/60 text-xs mt-1">{dateAujourdhui}</p>
-              </div>
-            </div>
-
-            <div className="relative flex flex-col items-center bg-gray-900">
-              <div className="absolute -top-3 w-6 h-6 bg-gray-950 rounded-full"></div>
-              <div className="border-l-2 border-dashed border-gray-600 h-full mx-3"></div>
-              <div className="absolute -bottom-3 w-6 h-6 bg-gray-950 rounded-full"></div>
-            </div>
-
-            <div className="bg-gray-900 w-1/2 p-8 flex flex-col justify-between">
-              <div>
-                <p className="text-gray-400 text-xs uppercase tracking-widest mb-3">Titulaire</p>
-                <p className="text-white text-xl font-bold">{prenom} {nom}</p>
-                <p className="text-gray-400 text-sm mt-1">{auth.currentUser?.email}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-xs uppercase tracking-widest mb-2">N Billet</p>
-                <p className="text-red-400 font-mono font-bold text-lg">
-                  SCN-{Date.now().toString().slice(-6)}
-                </p>
-                <div className="flex gap-px mt-4">
-                  {Array.from({ length: 30 }).map(function(_, i) {
-                    return (
-                      <div key={i} className="bg-white"
-                        style={{
-                          width: i % 3 === 0 ? "3px" : "2px",
-                          height: "40px",
-                          opacity: i % 2 === 0 ? 0.9 : 0.4
-                        }}>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-4 mt-8 justify-center">
-            <button onClick={() => naviguer("/Films")}
-              className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-semibold transition">
-              Voir d'autres films
-            </button>
-            <button onClick={() => naviguer("/dashboard")}
-              className="border border-gray-600 hover:border-red-500 text-gray-300 hover:text-white px-8 py-3 rounded-full font-semibold transition">
-              Mon espace
-            </button>
-          </div>
-
-        </div>
-      </div>
-    )
-  }
-
-  // FORMULAIRE
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-2xl">
+    <div className="min-h-screen flex items-center justify-center px-6"
+      style={{ backgroundColor: '#050B18' }}>
+      <div className="w-full max-w-md rounded-2xl p-10 shadow-xl"
+        style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
 
-        <p className="text-gray-400 text-sm mb-1">Vous etes sur le point de reserver</p>
-        <h1 className="text-4xl font-bold text-white mb-8">Votre billet</h1>
+        <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Réservation</p>
+        <h1 className="text-3xl font-bold text-white mb-2">
+          {film?.titre || "Chargement..."}
+        </h1>
+        <p className="text-sm mb-8" style={{ color: '#8899AA' }}>
+          Remplissez le formulaire pour confirmer votre réservation.
+        </p>
 
-        <div className="flex rounded-2xl overflow-hidden shadow-2xl mb-8">
-
-          <div className="w-1/2 relative">
-            <img src={film?.affiche} alt={film?.titre}
-              className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
-              <p className="text-white/60 text-xs uppercase tracking-widest mb-1">SENECINE</p>
-              <h3 className="text-xl font-extrabold text-white">{film?.titre}</h3>
-              <p className="text-white/60 text-xs mt-1">{dateAujourdhui}</p>
-            </div>
+        {reserve ? (
+          <div className="px-4 py-6 rounded-xl text-center border"
+            style={{ backgroundColor: '#00D4FF10', borderColor: '#00D4FF30', color: '#00D4FF' }}>
+            <p className="font-semibold text-lg">Réservation confirmée !</p>
+            <p className="text-sm mt-2" style={{ color: '#8899AA' }}>
+              Un email de confirmation vous a été envoyé.
+            </p>
           </div>
-
-          <div className="relative flex flex-col items-center bg-gray-900">
-            <div className="absolute -top-3 w-6 h-6 bg-gray-950 rounded-full"></div>
-            <div className="border-l-2 border-dashed border-gray-600 h-full mx-3"></div>
-            <div className="absolute -bottom-3 w-6 h-6 bg-gray-950 rounded-full"></div>
-          </div>
-
-          <div className="bg-gray-900 w-1/2 p-8 flex flex-col justify-center gap-4">
-            <p className="text-gray-400 text-xs uppercase tracking-widest mb-2">Titulaire</p>
-
-            <div>
-              <label className="text-gray-400 text-xs block mb-1">Prenom</label>
-              <input type="text" placeholder="Moussa"
-                value={prenom} onChange={e => setPrenom(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-red-500 transition" />
-            </div>
-
-            <div>
-              <label className="text-gray-400 text-xs block mb-1">Nom</label>
-              <input type="text" placeholder="Diallo"
-                value={nom} onChange={e => setNom(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-red-500 transition" />
+        ) : (
+          <div>
+            <div className="mb-4">
+              <label className="text-sm mb-1 block" style={{ color: '#8899AA' }}>Nom</label>
+              <input
+                type="text"
+                placeholder="Diallo"
+                value={nom}
+                onChange={function(e) { setNom(e.target.value) }}
+                className="w-full text-white px-4 py-3 rounded-xl focus:outline-none transition"
+                style={{ backgroundColor: '#050B18', border: '1px solid #1A2940' }}
+              />
             </div>
 
-            <p className="text-gray-500 text-xs">{auth.currentUser?.email}</p>
-          </div>
+            <div className="mb-8">
+              <label className="text-sm mb-1 block" style={{ color: '#8899AA' }}>Prénom</label>
+              <input
+                type="text"
+                placeholder="Moussa"
+                value={prenom}
+                onChange={function(e) { setPrenom(e.target.value) }}
+                className="w-full text-white px-4 py-3 rounded-xl focus:outline-none transition"
+                style={{ backgroundColor: '#050B18', border: '1px solid #1A2940' }}
+              />
+            </div>
 
-        </div>
-
-        {erreur && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
-            {erreur}
+            <button
+              onClick={confirmerReservation}
+              className="w-full py-3 rounded-xl font-semibold text-lg transition"
+              style={{ backgroundColor: '#00D4FF', color: '#050B18' }}>
+              Confirmer la réservation
+            </button>
           </div>
         )}
-
-        <button onClick={confirmerReservation} disabled={chargementReservation}
-          className="w-full bg-red-500 hover:bg-red-600 text-white py-4 rounded-2xl font-bold text-lg transition disabled:opacity-50">
-          {chargementReservation ? "Reservation en cours..." : "Confirmer ma reservation"}
-        </button>
-
-        <button onClick={() => naviguer("/Films")}
-          className="w-full text-gray-400 hover:text-white text-sm mt-4 transition">
-          Retour aux films
-        </button>
 
       </div>
     </div>

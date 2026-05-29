@@ -35,83 +35,94 @@ export default function Dashboard() {
   }, [utilisateur])
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-8">
+    <div className="min-h-screen text-white p-8"
+      style={{ backgroundColor: '#050B18' }}>
 
       {/* En-tête */}
       <div className="mb-10">
-        <p className="text-gray-400 text-sm mb-1">Tableau de bord</p>
+        <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Tableau de bord</p>
         <h1 className="text-4xl font-bold">
-          Bonjour {utilisateur?.displayName || utilisateur?.email} 👋
+          Bonjour {utilisateur?.displayName || utilisateur?.email}
         </h1>
-        <p className="text-gray-400 mt-2">Voici un résumé de votre activité sur SENECINE</p>
+        <p className="mt-2" style={{ color: '#8899AA' }}>
+          Voici un résumé de votre activité sur SENECINE
+        </p>
       </div>
 
       {/* Cartes de stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 
-        {/* Carte 1 */}
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-red-500 to-pink-600 shadow-lg">
-          <p className="text-white/70 text-sm mb-1">Films réservés</p>
-          <p className="text-5xl font-bold">{reservations.length}</p>
-          <p className="text-white/60 text-xs mt-3"> Total de vos réservations</p>
+        <div className="rounded-2xl p-6 shadow-lg"
+          style={{ background: 'linear-gradient(135deg, #00D4FF20, #00D4FF10)', border: '1px solid #00D4FF30' }}>
+          <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Films réservés</p>
+          <p className="text-5xl font-bold" style={{ color: '#00D4FF' }}>
+            {reservations.length}
+          </p>
+          <p className="text-xs mt-3" style={{ color: '#8899AA' }}>Total de vos réservations</p>
         </div>
 
-        {/* Carte 2 */}
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
-          <p className="text-white/70 text-sm mb-1">Dernière réservation</p>
-          <p className="text-2xl font-bold mt-2">
+        <div className="rounded-2xl p-6 shadow-lg"
+          style={{ background: 'linear-gradient(135deg, #7B61FF20, #7B61FF10)', border: '1px solid #7B61FF30' }}>
+          <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Dernière réservation</p>
+          <p className="text-2xl font-bold mt-2 text-white">
             {reservations.length > 0
               ? reservations[reservations.length - 1].date
               : "—"}
           </p>
-          <p className="text-white/60 text-xs mt-3">📅 Date de votre dernière séance</p>
+          <p className="text-xs mt-3" style={{ color: '#8899AA' }}>Date de votre dernière séance</p>
         </div>
 
-        {/* Carte 3 */}
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
-          <p className="text-white/70 text-sm mb-1">Statut</p>
-          <p className="text-2xl font-bold mt-2">Membre actif ✅</p>
-          <p className="text-white/60 text-xs mt-3"> Merci pour votre fidélité</p>
+        <div className="rounded-2xl p-6 shadow-lg"
+          style={{ background: 'linear-gradient(135deg, #00D4FF15, #7B61FF15)', border: '1px solid #1A2940' }}>
+          <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Statut</p>
+          <p className="text-2xl font-bold mt-2 text-white">Membre actif</p>
+          <p className="text-xs mt-3" style={{ color: '#8899AA' }}>Merci pour votre fidélité</p>
         </div>
 
       </div>
 
       {/* Liste des réservations */}
-      <div className="bg-gray-900 rounded-2xl shadow-lg p-6">
+      <div className="rounded-2xl shadow-lg p-6"
+        style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">Mes réservations</h2>
-          <Link to="/Films"
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm transition">
+          <Link to="/films"
+            className="px-4 py-2 rounded-lg text-sm transition font-semibold"
+            style={{ backgroundColor: '#00D4FF', color: '#050B18' }}>
             + Réserver un film
           </Link>
         </div>
 
         {chargement ? (
-          <p className="text-gray-400">Chargement...</p>
+          <p style={{ color: '#8899AA' }}>Chargement...</p>
         ) : reservations.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-4xl mb-3">🎬</p>
-            <p className="text-gray-400">Aucune réservation pour le moment.</p>
-            <Link to="/Films" className="text-red-400 hover:underline text-sm mt-2 inline-block">
-              Voir les films disponibles →
+            <p style={{ color: '#8899AA' }}>Aucune réservation pour le moment.</p>
+            <Link to="/films" className="text-sm mt-2 inline-block hover:underline"
+              style={{ color: '#00D4FF' }}>
+              Voir les films disponibles
             </Link>
           </div>
         ) : (
-          <div className="divide-y divide-gray-800">
+          <div className="divide-y" style={{ borderColor: '#1A2940' }}>
             {reservations.map(function(reservation) {
               return (
                 <div key={reservation.id}
                   className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-red-500 to-pink-600 p-3 rounded-full text-xl">
-                      🎥
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: '#00D4FF20', border: '1px solid #00D4FF30' }}>
+                      <span style={{ color: '#00D4FF' }}>▶</span>
                     </div>
                     <div>
-                      <p className="font-semibold">{reservation.filmTitre}</p>
-                      <p className="text-sm text-gray-400">Réservé le {reservation.date}</p>
+                      <p className="font-semibold text-white">{reservation.filmTitre}</p>
+                      <p className="text-sm" style={{ color: '#8899AA' }}>
+                        Réservé le {reservation.date}
+                      </p>
                     </div>
                   </div>
-                  <span className="bg-green-900 text-green-400 text-xs px-3 py-1 rounded-full font-medium">
+                  <span className="text-xs px-3 py-1 rounded-full font-medium"
+                    style={{ backgroundColor: '#00D4FF15', color: '#00D4FF', border: '1px solid #00D4FF30' }}>
                     Confirmé
                   </span>
                 </div>
