@@ -36,7 +36,7 @@ export default function Connexion() {
           SENECINE
         </p>
 
-        <p className="text-sm mb-1" style={{ color: "#8899AA" }}>Bon retour parmi nous</p>
+        <p className="text-sm mb-1" style={{ color: "#8899AA" }}>You are Welcome</p>
         <h1 className="text-3xl font-bold text-white mb-8">Connexion</h1>
 
         {erreur && (
