@@ -10,6 +10,7 @@ import Connexion from './pages/Connexion'
 import Dashboard from './pages/Dashboard'
 import ReinitialisationMotDePasse from './pages/ReinitialisationMotDePasse'
 import RouteProtegee from './composants/RouteProtegee'
+import Admin from './pages/Admin'
 
 export default function App() {
   const [connecte, setConnecte] = useState<boolean | null>(null)
@@ -61,6 +62,10 @@ export default function App() {
         <Route path="/dashboard" element={
           <RouteProtegee><Dashboard /></RouteProtegee>
         } />
+{/* Route Admin */}
+<Route path="/admin" element={
+  <RouteProtegee><Admin /></RouteProtegee>
+} />
 
         {/* Toute autre URL redirige vers connexion */}
         <Route path="*" element={<Navigate to="/connexion" />} />
