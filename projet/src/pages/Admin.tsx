@@ -19,6 +19,7 @@ export default function Admin() {
   const [recherche, setRecherche] = useState("")
   const [suppressionId, setSuppressionId] = useState<string | null>(null)
   const [suppressionChargement, setSuppressionChargement] = useState(false)
+  const [sidebarOuverte, setSidebarOuverte] = useState(false)
   const navigate = useNavigate()
 
   useEffect(function() {
@@ -126,13 +127,9 @@ export default function Admin() {
     { id: 'utilisateurs', label: "Utilisateurs" },
   ]
 
-  return (
-    <div className="flex min-h-screen" style={{ backgroundColor: '#0A0A0A' }}>
-
-      {/* Sidebar */}
-      <div className="w-64 flex flex-col py-8 px-4"
-        style={{ backgroundColor: '#111111', borderRight: '1px solid #222222' }}>
-
+  function SidebarContenu() {
+    return (
+      <>
         <p className="text-xl font-extrabold mb-1 px-4" style={{ color: '#00A651' }}>LAZONE</p>
         <p className="text-xs px-4 mb-10" style={{ color: '#888888' }}>Panel Admin</p>
 
@@ -143,8 +140,8 @@ export default function Admin() {
           const actif = pageCourante === item.id
           return (
             <button key={item.id}
-              onClick={() => setPageCourante(item.id)}
-              className="text-left px-4 py-3 rounded-xl mb-1 text-sm font-medium transition"
+              onClick={() => { setPageCourante(item.id); setSidebarOuverte(false) }}
+              className="text-left px-4 py-3 rounded-xl mb-1 text-sm font-medium transition w-full"
               style={{
                 backgroundColor: actif ? '#00A65115' : 'transparent',
                 color: actif ? '#00A651' : '#888888',
@@ -167,20 +164,57 @@ export default function Admin() {
             Deconnexion
           </button>
         </div>
+      </>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen" style={{ backgroundColor: '#0A0A0A' }}>
+
+      {/* Sidebar desktop */}
+      <div className="hidden md:flex w-64 flex-col py-8 px-4"
+        style={{ backgroundColor: '#111111', borderRight: '1px solid #222222' }}>
+        <SidebarContenu />
       </div>
 
-      {/* Contenu */}
-      <div className="flex-1 p-8 overflow-y-auto">
+      {/* Sidebar mobile — overlay */}
+      {sidebarOuverte && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Fond semi-transparent */}
+          <div className="absolute inset-0 bg-black/70"
+            onClick={() => setSidebarOuverte(false)}></div>
+          {/* Menu */}
+          <div className="absolute left-0 top-0 bottom-0 w-64 flex flex-col py-8 px-4"
+            style={{ backgroundColor: '#111111' }}>
+            <SidebarContenu />
+          </div>
+        </div>
+      )}
 
-        <div className="mb-8">
-          <p className="text-sm" style={{ color: '#888888' }}>Administration</p>
-          <h1 className="text-3xl font-bold text-white">Panel Admin</h1>
+      {/* Contenu principal */}
+      <div className="flex-1 p-4 md:p-8 overflow-y-auto">
+
+        {/* Header mobile avec bouton menu */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="text-sm" style={{ color: '#888888' }}>Administration</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Panel Admin</h1>
+          </div>
+          {/* Bouton hamburger mobile */}
+          <button
+            className="md:hidden flex flex-col gap-1.5 p-2 rounded-lg"
+            style={{ backgroundColor: '#111111', border: '1px solid #222222' }}
+            onClick={() => setSidebarOuverte(true)}>
+            <div className="w-5 h-0.5" style={{ backgroundColor: '#ffffff' }}></div>
+            <div className="w-5 h-0.5" style={{ backgroundColor: '#ffffff' }}></div>
+            <div className="w-5 h-0.5" style={{ backgroundColor: '#ffffff' }}></div>
+          </button>
         </div>
 
         {/* VUE D'ENSEMBLE */}
         {pageCourante === 'overview' && (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[
                 { label: 'Total reservations', value: reservations.length, color: '#00A651' },
                 { label: 'Places vendues', value: totalPlaces, color: '#FDEF00' },
@@ -188,10 +222,10 @@ export default function Admin() {
                 { label: 'Films reserves', value: [...new Set(reservations.map(r => r.filmTitre))].length, color: '#FDEF00' },
               ].map(function(carte) {
                 return (
-                  <div key={carte.label} className="rounded-2xl p-5"
+                  <div key={carte.label} className="rounded-2xl p-4 md:p-5"
                     style={{ backgroundColor: '#111111', border: '1px solid #222222' }}>
                     <p className="text-xs mb-2" style={{ color: '#888888' }}>{carte.label}</p>
-                    <p className="text-4xl font-bold" style={{ color: carte.color }}>{carte.value}</p>
+                    <p className="text-3xl md:text-4xl font-bold" style={{ color: carte.color }}>{carte.value}</p>
                   </div>
                 )
               })}
@@ -304,16 +338,16 @@ export default function Admin() {
 
         {/* TOUTES LES RESERVATIONS */}
         {pageCourante === 'reservations' && (
-          <div className="rounded-2xl p-6"
+          <div className="rounded-2xl p-4 md:p-6"
             style={{ backgroundColor: '#111111', border: '1px solid #222222' }}>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <h2 className="text-xl font-bold text-white">
                 Toutes les reservations ({reservations.length})
               </h2>
               <input type="text" placeholder="Rechercher..."
                 value={recherche} onChange={e => setRecherche(e.target.value)}
-                className="text-white px-4 py-2 rounded-xl text-sm focus:outline-none"
-                style={{ backgroundColor: '#0A0A0A', border: '1px solid #222222', width: 200 }} />
+                className="text-white px-4 py-2 rounded-xl text-sm focus:outline-none w-full md:w-48"
+                style={{ backgroundColor: '#0A0A0A', border: '1px solid #222222' }} />
             </div>
 
             {chargement ? (
@@ -324,7 +358,7 @@ export default function Admin() {
                   <thead>
                     <tr style={{ borderBottom: '1px solid #222222' }}>
                       {['Client', 'Email', 'Film', 'Date', 'Horaire', 'Places', 'N° Ticket', 'Action'].map(h => (
-                        <th key={h} className="text-left py-3 px-4" style={{ color: '#888888' }}>{h}</th>
+                        <th key={h} className="text-left py-3 px-4 whitespace-nowrap" style={{ color: '#888888' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -332,14 +366,14 @@ export default function Admin() {
                     {reservationsFiltrees.map(function(r) {
                       return (
                         <tr key={r.id} style={{ borderBottom: '1px solid #222222' }}>
-                          <td className="py-4 px-4 text-white font-semibold">{r.prenom} {r.nom}</td>
-                          <td className="py-4 px-4" style={{ color: '#888888' }}>{r.email}</td>
-                          <td className="py-4 px-4 text-white">{r.filmTitre}</td>
-                          <td className="py-4 px-4" style={{ color: '#888888' }}>{r.dateSeance || r.date}</td>
-                          <td className="py-4 px-4" style={{ color: '#888888' }}>{r.horaire || '—'}</td>
-                          <td className="py-4 px-4" style={{ color: '#00A651' }}>{r.nbPlaces || 1}</td>
-                          <td className="py-4 px-4 font-mono text-xs" style={{ color: '#FDEF00' }}>{r.numeroTicket || '—'}</td>
-                          <td className="py-4 px-4">
+                          <td className="py-4 px-4 text-white font-semibold whitespace-nowrap">{r.prenom} {r.nom}</td>
+                          <td className="py-4 px-4 whitespace-nowrap" style={{ color: '#888888' }}>{r.email}</td>
+                          <td className="py-4 px-4 text-white whitespace-nowrap">{r.filmTitre}</td>
+                          <td className="py-4 px-4 whitespace-nowrap" style={{ color: '#888888' }}>{r.dateSeance || r.date}</td>
+                          <td className="py-4 px-4 whitespace-nowrap" style={{ color: '#888888' }}>{r.horaire || '—'}</td>
+                          <td className="py-4 px-4 whitespace-nowrap" style={{ color: '#00A651' }}>{r.nbPlaces || 1}</td>
+                          <td className="py-4 px-4 font-mono text-xs whitespace-nowrap" style={{ color: '#FDEF00' }}>{r.numeroTicket || '—'}</td>
+                          <td className="py-4 px-4 whitespace-nowrap">
                             {suppressionId === r.id ? (
                               <div className="flex gap-2 items-center">
                                 <p className="text-xs" style={{ color: '#888888' }}>Confirmer ?</p>
@@ -360,7 +394,7 @@ export default function Admin() {
                             ) : (
                               <button
                                 onClick={() => setSuppressionId(r.id)}
-                                className="text-xs px-3 py-1 rounded-lg transition"
+                                className="text-xs px-3 py-1 rounded-lg transition whitespace-nowrap"
                                 style={{ backgroundColor: '#E2001A15', color: '#E2001A', border: '1px solid #E2001A25' }}>
                                 Annuler
                               </button>
@@ -378,7 +412,7 @@ export default function Admin() {
 
         {/* UTILISATEURS */}
         {pageCourante === 'utilisateurs' && (
-          <div className="rounded-2xl p-6"
+          <div className="rounded-2xl p-4 md:p-6"
             style={{ backgroundColor: '#111111', border: '1px solid #222222' }}>
             <h2 className="text-xl font-bold text-white mb-6">Utilisateurs actifs</h2>
             <div className="divide-y" style={{ borderColor: '#222222' }}>
