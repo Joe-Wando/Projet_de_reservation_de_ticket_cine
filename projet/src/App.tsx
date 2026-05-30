@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { auth } from './firebase'
 import Navbar from './composants/Navbar'
+import Footer from './composants/Footer'
 import Acceuil from './pages/Acceuil'
 import Films from './pages/Films'
 import Reservation from './pages/Reservation'
@@ -22,7 +23,6 @@ export default function App() {
     return desabonner
   }, [])
 
-  // On attend la réponse de Firebase avant d'afficher quoi que ce soit
   if (connecte === null) {
     return (
       <div className="min-h-screen flex items-center justify-center"
@@ -33,43 +33,40 @@ export default function App() {
   }
 
   return (
-    <>
-      {/* Navbar uniquement si connecté et pas sur la landing */}
+    <div className="flex flex-col min-h-screen">
       {connecte && <Navbar />}
 
-      <Routes>
-        {/* Pages publiques — auth seulement */}
-        <Route path="/connexion" element={
-          connecte ? <Navigate to="/" /> : <Connexion />
-        } />
-        <Route path="/inscription" element={
-          connecte ? <Navigate to="/" /> : <Inscription />
-        } />
-        <Route path="/reinitialisation" element={
-          connecte ? <Navigate to="/" /> : <ReinitialisationMotDePasse />
-        } />
+      <div className="flex-1">
+        <Routes>
+          <Route path="/connexion" element={
+            connecte ? <Navigate to="/" /> : <Connexion />
+          } />
+          <Route path="/inscription" element={
+            connecte ? <Navigate to="/" /> : <Inscription />
+          } />
+          <Route path="/reinitialisation" element={
+            connecte ? <Navigate to="/" /> : <ReinitialisationMotDePasse />
+          } />
+          <Route path="/" element={
+            connecte ? <Acceuil /> : <Navigate to="/connexion" />
+          } />
+          <Route path="/Films" element={
+            <RouteProtegee><Films /></RouteProtegee>
+          } />
+          <Route path="/reservation/:id" element={
+            <RouteProtegee><Reservation /></RouteProtegee>
+          } />
+          <Route path="/dashboard" element={
+            <RouteProtegee><Dashboard /></RouteProtegee>
+          } />
+          <Route path="/admin" element={
+            <RouteProtegee><Admin /></RouteProtegee>
+          } />
+          <Route path="*" element={<Navigate to="/connexion" />} />
+        </Routes>
+      </div>
 
-        {/* Pages protégées */}
-        <Route path="/" element={
-          connecte ? <Acceuil /> : <Navigate to="/connexion" />
-        } />
-        <Route path="/Films" element={
-          <RouteProtegee><Films /></RouteProtegee>
-        } />
-        <Route path="/reservation/:id" element={
-          <RouteProtegee><Reservation /></RouteProtegee>
-        } />
-        <Route path="/dashboard" element={
-          <RouteProtegee><Dashboard /></RouteProtegee>
-        } />
-{/* Route Admin */}
-<Route path="/admin" element={
-  <RouteProtegee><Admin /></RouteProtegee>
-} />
-
-        {/* Toute autre URL redirige vers connexion */}
-        <Route path="*" element={<Navigate to="/connexion" />} />
-      </Routes>
-    </>
+      {connecte && <Footer />}
+    </div>
   )
 }

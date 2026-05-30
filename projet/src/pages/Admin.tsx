@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { auth, db } from '../firebase'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
+import emailjs from "@emailjs/browser"
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, CartesianGrid
@@ -16,6 +17,8 @@ export default function Admin() {
   const [chargement, setChargement] = useState(true)
   const [pageCourante, setPageCourante] = useState('overview')
   const [recherche, setRecherche] = useState("")
+  const [suppressionId, setSuppressionId] = useState<string | null>(null)
+  const [suppressionChargement, setSuppressionChargement] = useState(false)
   const navigate = useNavigate()
 
   useEffect(function() {
@@ -45,6 +48,37 @@ export default function Admin() {
     navigate('/')
   }
 
+  async function supprimerReservation(reservation: any) {
+    setSuppressionChargement(true)
+    try {
+      await deleteDoc(doc(db, 'reservations', reservation.id))
+
+      await emailjs.send(
+        "service_4zcakd1",
+        "template_hvr9y44",
+        {
+          nom: reservation.nom,
+          prenom: reservation.prenom,
+          email: reservation.email,
+          film_titre: reservation.filmTitre,
+          date_seance: reservation.dateSeance || reservation.date,
+          numero_ticket: reservation.numeroTicket || '—',
+          message: "Votre reservation a ete annulee par notre service client."
+        },
+        "LXcpyZm3pWLch4zM0"
+      )
+
+      setReservations(function(prev) {
+        return prev.filter(r => r.id !== reservation.id)
+      })
+      setSuppressionId(null)
+    } catch (e) {
+      console.error("Erreur suppression", e)
+    } finally {
+      setSuppressionChargement(false)
+    }
+  }
+
   const reservationsFiltrees = reservations.filter(function(r) {
     return (
       r.filmTitre?.toLowerCase().includes(recherche.toLowerCase()) ||
@@ -56,14 +90,12 @@ export default function Admin() {
 
   const totalPlaces = reservations.reduce((acc, r) => acc + (r.nbPlaces || 1), 0)
 
-  // Donnees pour graphiques
   const donneesHoraires = [
     { horaire: '14h00', reservations: reservations.filter(r => r.horaire === '14h00').length },
     { horaire: '19h00', reservations: reservations.filter(r => r.horaire === '19h00').length },
     { horaire: '22h00', reservations: reservations.filter(r => r.horaire === '22h00').length },
   ]
 
-  // Top 5 films les plus reserves
   const filmsCount: Record<string, number> = {}
   reservations.forEach(function(r) {
     if (r.filmTitre) filmsCount[r.filmTitre] = (filmsCount[r.filmTitre] || 0) + 1
@@ -73,7 +105,6 @@ export default function Admin() {
     .slice(0, 5)
     .map(([titre, count]) => ({ titre: titre.slice(0, 15) + (titre.length > 15 ? '...' : ''), count }))
 
-  // Reservations par date
   const parDate: Record<string, number> = {}
   reservations.forEach(function(r) {
     const date = r.dateSeance || r.date || 'Inconnue'
@@ -84,7 +115,6 @@ export default function Admin() {
     .slice(-7)
     .map(([date, count]) => ({ date, count }))
 
-  // Repartition places
   const donneesParts = [
     { name: '1 place', value: reservations.filter(r => (r.nbPlaces || 1) === 1).length },
     { name: '2 places', value: reservations.filter(r => r.nbPlaces === 2).length },
@@ -151,7 +181,6 @@ export default function Admin() {
         {/* VUE D'ENSEMBLE */}
         {pageCourante === 'overview' && (
           <>
-            {/* Cartes stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
               {[
                 { label: 'Total reservations', value: reservations.length, color: '#00D4FF' },
@@ -169,10 +198,7 @@ export default function Admin() {
               })}
             </div>
 
-            {/* Graphiques ligne 1 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-
-              {/* Reservations par horaire — BarChart */}
               <div className="rounded-2xl p-6"
                 style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
                 <h2 className="text-sm font-bold text-white mb-6">Reservations par horaire</h2>
@@ -181,17 +207,13 @@ export default function Admin() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#1A2940" />
                     <XAxis dataKey="horaire" stroke="#8899AA" tick={{ fontSize: 12 }} />
                     <YAxis stroke="#8899AA" tick={{ fontSize: 12 }} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }}
-                      labelStyle={{ color: '#ffffff' }}
-                      itemStyle={{ color: '#00D4FF' }}
-                    />
+                    <Tooltip contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }}
+                      labelStyle={{ color: '#ffffff' }} itemStyle={{ color: '#00D4FF' }} />
                     <Bar dataKey="reservations" fill="#00D4FF" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
-              {/* Top films — BarChart horizontal */}
               <div className="rounded-2xl p-6"
                 style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
                 <h2 className="text-sm font-bold text-white mb-6">Top 5 films</h2>
@@ -200,22 +222,15 @@ export default function Admin() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#1A2940" />
                     <XAxis type="number" stroke="#8899AA" tick={{ fontSize: 12 }} />
                     <YAxis dataKey="titre" type="category" stroke="#8899AA" tick={{ fontSize: 11 }} width={100} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }}
-                      labelStyle={{ color: '#ffffff' }}
-                      itemStyle={{ color: '#7B61FF' }}
-                    />
+                    <Tooltip contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }}
+                      labelStyle={{ color: '#ffffff' }} itemStyle={{ color: '#7B61FF' }} />
                     <Bar dataKey="count" fill="#7B61FF" radius={[0, 6, 6, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-
             </div>
 
-            {/* Graphiques ligne 2 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-
-              {/* Reservations par date — LineChart */}
               <div className="rounded-2xl p-6"
                 style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
                 <h2 className="text-sm font-bold text-white mb-6">Reservations par date</h2>
@@ -224,18 +239,14 @@ export default function Admin() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#1A2940" />
                     <XAxis dataKey="date" stroke="#8899AA" tick={{ fontSize: 10 }} />
                     <YAxis stroke="#8899AA" tick={{ fontSize: 12 }} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }}
-                      labelStyle={{ color: '#ffffff' }}
-                      itemStyle={{ color: '#00D4FF' }}
-                    />
+                    <Tooltip contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }}
+                      labelStyle={{ color: '#ffffff' }} itemStyle={{ color: '#00D4FF' }} />
                     <Line type="monotone" dataKey="count" stroke="#00D4FF"
                       strokeWidth={2} dot={{ fill: '#00D4FF', r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
-              {/* Repartition places — PieChart */}
               <div className="rounded-2xl p-6"
                 style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
                 <h2 className="text-sm font-bold text-white mb-6">Repartition des places</h2>
@@ -247,28 +258,22 @@ export default function Admin() {
                         return <Cell key={index} fill={COULEURS[index % COULEURS.length]} />
                       })}
                     </Pie>
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }}
-                      labelStyle={{ color: '#ffffff' }}
-                    />
+                    <Tooltip contentStyle={{ backgroundColor: '#0D1526', border: '1px solid #1A2940', borderRadius: 8 }} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex gap-4 justify-center mt-2">
                   {donneesParts.map(function(d, i) {
                     return (
                       <div key={d.name} className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: COULEURS[i] }}></div>
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COULEURS[i] }}></div>
                         <span className="text-xs" style={{ color: '#8899AA' }}>{d.name}</span>
                       </div>
                     )
                   })}
                 </div>
               </div>
-
             </div>
 
-            {/* Dernieres reservations */}
             <div className="rounded-2xl p-6"
               style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
               <h2 className="text-sm font-bold text-white mb-6">Dernieres reservations</h2>
@@ -319,7 +324,7 @@ export default function Admin() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ borderBottom: '1px solid #1A2940' }}>
-                      {['Client', 'Email', 'Film', 'Date', 'Horaire', 'Places', 'N° Ticket'].map(h => (
+                      {['Client', 'Email', 'Film', 'Date', 'Horaire', 'Places', 'N° Ticket', 'Action'].map(h => (
                         <th key={h} className="text-left py-3 px-4" style={{ color: '#8899AA' }}>{h}</th>
                       ))}
                     </tr>
@@ -335,6 +340,33 @@ export default function Admin() {
                           <td className="py-4 px-4" style={{ color: '#8899AA' }}>{r.horaire || '—'}</td>
                           <td className="py-4 px-4" style={{ color: '#00D4FF' }}>{r.nbPlaces || 1}</td>
                           <td className="py-4 px-4 font-mono text-xs" style={{ color: '#7B61FF' }}>{r.numeroTicket || '—'}</td>
+                          <td className="py-4 px-4">
+                            {suppressionId === r.id ? (
+                              <div className="flex gap-2 items-center">
+                                <p className="text-xs" style={{ color: '#8899AA' }}>Confirmer ?</p>
+                                <button
+                                  onClick={() => supprimerReservation(r)}
+                                  disabled={suppressionChargement}
+                                  className="text-xs px-3 py-1 rounded-lg font-semibold disabled:opacity-50"
+                                  style={{ backgroundColor: '#FF000020', color: '#FF6B6B', border: '1px solid #FF000030' }}>
+                                  {suppressionChargement ? "..." : "Oui"}
+                                </button>
+                                <button
+                                  onClick={() => setSuppressionId(null)}
+                                  className="text-xs px-3 py-1 rounded-lg"
+                                  style={{ backgroundColor: '#1A2940', color: '#8899AA' }}>
+                                  Non
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setSuppressionId(r.id)}
+                                className="text-xs px-3 py-1 rounded-lg transition"
+                                style={{ backgroundColor: '#FF000015', color: '#FF6B6B', border: '1px solid #FF000025' }}>
+                                Annuler
+                              </button>
+                            )}
+                          </td>
                         </tr>
                       )
                     })}
