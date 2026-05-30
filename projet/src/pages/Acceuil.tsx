@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useFilms } from "../hooks/useFilms"
-import { LogoPetit } from "../composants/Logo"
-
 export default function Acceuil() {
   const { films, chargement } = useFilms()
   const [filmHero, setFilmHero] = useState<any>(null)
@@ -184,24 +182,8 @@ export default function Acceuil() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-10 px-8" style={{ borderTop: "1px solid #222222" }}>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
 
-          <LogoPetit />
 
-          <div className="flex gap-6 text-sm" style={{ color: "#888888" }}>
-            <Link to="/" className="hover:text-white transition">Accueil</Link>
-            <Link to="/films" className="hover:text-white transition">Films</Link>
-            <Link to="/connexion" className="hover:text-white transition">Connexion</Link>
-            <Link to="/inscription" className="hover:text-white transition">Inscription</Link>
-          </div>
-
-          <p className="text-xs" style={{ color: "#222222" }}>
-            2026 LAZONE. Tous droits reserves.
-          </p>
-        </div>
-      </footer>
 
     </div>
   )
