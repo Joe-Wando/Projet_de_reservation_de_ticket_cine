@@ -46,41 +46,41 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen p-8" style={{ backgroundColor: '#050B18' }}>
+    <div className="min-h-screen p-8" style={{ backgroundColor: '#0A0A0A' }}>
 
       {/* En-tete */}
       <div className="mb-10">
-        <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Tableau de bord</p>
+        <p className="text-sm mb-1" style={{ color: '#888888' }}>Tableau de bord</p>
         <h1 className="text-4xl font-bold text-white">
           Bonjour {utilisateur?.displayName || utilisateur?.email}
         </h1>
-        <p className="mt-2" style={{ color: '#8899AA' }}>
-          Voici un resume de votre activite sur SENECINE
+        <p className="mt-2" style={{ color: '#888888' }}>
+          Voici un resume de votre activite sur LAZONE
         </p>
       </div>
 
       {/* Cartes stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div className="rounded-2xl p-6"
-          style={{ background: 'linear-gradient(135deg, #00D4FF, #0088AA)' }}>
+          style={{ background: 'linear-gradient(135deg, #00A651, #007A3D)' }}>
           <p className="text-white/70 text-sm mb-1">Films reserves</p>
           <p className="text-5xl font-bold text-white">{reservations.length}</p>
           <p className="text-white/60 text-xs mt-3">Total de vos reservations</p>
         </div>
 
         <div className="rounded-2xl p-6"
-          style={{ background: 'linear-gradient(135deg, #7B61FF, #4A3AFF)' }}>
-          <p className="text-white/70 text-sm mb-1">Derniere reservation</p>
-          <p className="text-2xl font-bold text-white mt-2">
+          style={{ background: 'linear-gradient(135deg, #FDEF00, #C8B800)' }}>
+          <p className="text-black/70 text-sm mb-1">Derniere reservation</p>
+          <p className="text-2xl font-bold text-black mt-2">
             {reservations.length > 0
               ? reservations[reservations.length - 1].date
               : "—"}
           </p>
-          <p className="text-white/60 text-xs mt-3">Date de votre derniere seance</p>
+          <p className="text-black/60 text-xs mt-3">Date de votre derniere seance</p>
         </div>
 
         <div className="rounded-2xl p-6"
-          style={{ background: 'linear-gradient(135deg, #00FF9D, #00AA66)' }}>
+          style={{ background: 'linear-gradient(135deg, #E2001A, #A80013)' }}>
           <p className="text-white/70 text-sm mb-1">Statut</p>
           <p className="text-2xl font-bold text-white mt-2">Membre actif</p>
           <p className="text-white/60 text-xs mt-3">Merci pour votre fidelite</p>
@@ -89,29 +89,29 @@ export default function Dashboard() {
 
       {/* Liste reservations */}
       <div className="rounded-2xl p-6"
-        style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}>
+        style={{ backgroundColor: '#111111', border: '1px solid #222222' }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white">Mes reservations</h2>
-          <Link to="/Films"
+          <Link to="/films"
             className="text-sm px-4 py-2 rounded-lg font-semibold transition"
-            style={{ backgroundColor: '#00D4FF', color: '#050B18' }}>
+            style={{ backgroundColor: '#00A651', color: '#ffffff' }}>
             + Reserver un film
           </Link>
         </div>
 
         {chargement ? (
-          <p style={{ color: '#8899AA' }}>Chargement...</p>
+          <p style={{ color: '#888888' }}>Chargement...</p>
         ) : reservations.length === 0 ? (
           <div className="text-center py-10">
-            <p style={{ color: '#8899AA' }}>Aucune reservation pour le moment.</p>
-            <Link to="/Films"
+            <p style={{ color: '#888888' }}>Aucune reservation pour le moment.</p>
+            <Link to="/films"
               className="text-sm mt-2 inline-block hover:underline"
-              style={{ color: '#00D4FF' }}>
+              style={{ color: '#00A651' }}>
               Voir les films disponibles
             </Link>
           </div>
         ) : (
-          <div className="divide-y" style={{ borderColor: '#1A2940' }}>
+          <div className="divide-y" style={{ borderColor: '#222222' }}>
             {reservations.map(function(reservation) {
               return (
                 <div key={reservation.id}
@@ -124,13 +124,13 @@ export default function Dashboard() {
                     )}
                     <div>
                       <p className="font-semibold text-white">{reservation.filmTitre}</p>
-                      <p className="text-xs mt-1" style={{ color: '#8899AA' }}>
+                      <p className="text-xs mt-1" style={{ color: '#888888' }}>
                         {reservation.dateSeance || reservation.date}
                         {reservation.horaire && ` — ${reservation.horaire}`}
                         {reservation.nbPlaces && ` — ${reservation.nbPlaces} place${reservation.nbPlaces > 1 ? 's' : ''}`}
                       </p>
                       {reservation.numeroTicket && (
-                        <p className="text-xs font-mono mt-1" style={{ color: '#7B61FF' }}>
+                        <p className="text-xs font-mono mt-1" style={{ color: '#FDEF00' }}>
                           {reservation.numeroTicket}
                         </p>
                       )}
@@ -139,28 +139,28 @@ export default function Dashboard() {
 
                   <div className="flex items-center gap-3">
                     <span className="text-xs px-3 py-1 rounded-full font-medium"
-                      style={{ backgroundColor: '#00D4FF15', color: '#00D4FF', border: '1px solid #00D4FF30' }}>
+                      style={{ backgroundColor: '#00A65115', color: '#00A651', border: '1px solid #00A65130' }}>
                       Confirme
                     </span>
 
                     {suppressionId === reservation.id ? (
                       <div className="flex gap-2 items-center">
-                        <p className="text-xs" style={{ color: '#8899AA' }}>Confirmer ?</p>
+                        <p className="text-xs" style={{ color: '#888888' }}>Confirmer ?</p>
                         <button onClick={() => supprimerReservation(reservation.id)}
                           className="text-xs px-3 py-1 rounded-lg font-semibold"
-                          style={{ backgroundColor: '#FF000020', color: '#FF6B6B', border: '1px solid #FF000030' }}>
+                          style={{ backgroundColor: '#E2001A20', color: '#E2001A', border: '1px solid #E2001A30' }}>
                           Oui
                         </button>
                         <button onClick={() => setSuppressionId(null)}
                           className="text-xs px-3 py-1 rounded-lg font-semibold"
-                          style={{ backgroundColor: '#1A2940', color: '#8899AA' }}>
+                          style={{ backgroundColor: '#222222', color: '#888888' }}>
                           Non
                         </button>
                       </div>
                     ) : (
                       <button onClick={() => setSuppressionId(reservation.id)}
                         className="text-xs px-3 py-1 rounded-lg transition"
-                        style={{ backgroundColor: '#FF000015', color: '#FF6B6B', border: '1px solid #FF000025' }}>
+                        style={{ backgroundColor: '#E2001A15', color: '#E2001A', border: '1px solid #E2001A25' }}>
                         Supprimer
                       </button>
                     )}

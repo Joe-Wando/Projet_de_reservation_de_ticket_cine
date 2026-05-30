@@ -13,55 +13,48 @@ export default function Films() {
 
   return (
     <div className="min-h-screen text-white px-6 py-12"
-      style={{ backgroundColor: '#050B18' }}>
+      style={{ backgroundColor: '#0A0A0A' }}>
 
       <div className="max-w-6xl mx-auto mb-10">
-        <p className="text-sm mb-1" style={{ color: '#8899AA' }}>Catalogue complet</p>
+        <p className="text-sm mb-1" style={{ color: '#888888' }}>Catalogue complet</p>
         <h1 className="text-4xl font-bold mb-6">Nos films</h1>
 
-        {/* Barre de recherche */}
         <div className="relative max-w-md">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2"
-            style={{ color: '#8899AA' }}>
-          </span>
           <input
             type="text"
             placeholder="Rechercher un film..."
             value={recherche}
             onChange={e => setRecherche(e.target.value)}
-            className="w-full text-white pl-11 pr-4 py-3 rounded-xl focus:outline-none transition"
-            style={{ backgroundColor: '#0D1526', border: '1px solid #1A2940' }}
+            className="w-full text-white pl-4 pr-4 py-3 rounded-xl focus:outline-none transition"
+            style={{ backgroundColor: '#111111', border: '1px solid #222222' }}
           />
           {recherche && (
             <button onClick={() => setRecherche("")}
               className="absolute right-4 top-1/2 -translate-y-1/2 transition hover:text-white"
-              style={{ color: '#8899AA' }}>
+              style={{ color: '#888888' }}>
               X
             </button>
           )}
         </div>
 
-        <p className="text-sm mt-4" style={{ color: '#8899AA' }}>
-          {filmsFiltres.length} film{filmsFiltres.length > 1 ? "s" : ""} trouvé{filmsFiltres.length > 1 ? "s" : ""}
+        <p className="text-sm mt-4" style={{ color: '#888888' }}>
+          {filmsFiltres.length} film{filmsFiltres.length > 1 ? "s" : ""} trouve{filmsFiltres.length > 1 ? "s" : ""}
         </p>
       </div>
 
-      {/* Grille */}
       <div className="max-w-6xl mx-auto">
         {chargement ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <p style={{ color: '#8899AA' }}>Chargement des films...</p>
-            </div>
+            <p style={{ color: '#888888' }}>Chargement des films...</p>
           </div>
         ) : filmsFiltres.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-lg" style={{ color: '#8899AA' }}>
-              Aucun film trouvé pour "{recherche}"
+            <p className="text-lg" style={{ color: '#888888' }}>
+              Aucun film trouve pour "{recherche}"
             </p>
             <button onClick={() => setRecherche("")}
               className="text-sm mt-3 inline-block hover:underline"
-              style={{ color: '#00D4FF' }}>
+              style={{ color: '#00A651' }}>
               Effacer la recherche
             </button>
           </div>
@@ -71,35 +64,29 @@ export default function Films() {
               return (
                 <div key={film.id}
                   className="group relative rounded-2xl overflow-hidden cursor-pointer hover:scale-105 transition duration-300"
-                  style={{ border: '1px solid #1A2940' }}>
+                  style={{ border: '1px solid #222222' }}>
 
-                  <img
-                    src={film.affiche}
-                    alt={film.titre}
-                    className="w-full h-72 object-cover"
-                  />
+                  <img src={film.affiche} alt={film.titre}
+                    className="w-full h-72 object-cover" />
 
-                  {/* Badge note */}
                   <span className="absolute top-3 right-3 text-xs px-2 py-1 rounded-full font-bold"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.7)', color: '#00D4FF' }}>
+                    style={{ backgroundColor: 'rgba(0,0,0,0.7)', color: '#FDEF00' }}>
                     {film.note.toFixed(1)}
                   </span>
 
-                  {/* Infos en bas */}
                   <div className="absolute bottom-0 left-0 right-0 p-4"
                     style={{ background: 'linear-gradient(to top, black, transparent)' }}>
                     <p className="font-bold text-white text-sm leading-tight">{film.titre}</p>
                   </div>
 
-                  {/* Overlay hover */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col items-center justify-center gap-3 p-4"
                     style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}>
                     <p className="text-white text-xs text-center line-clamp-4">{film.synopsis}</p>
                     <button
                       onClick={() => naviguer("/reservation/" + film.id)}
                       className="px-6 py-2 rounded-full font-semibold text-sm transition"
-                      style={{ backgroundColor: '#00D4FF', color: '#050B18' }}>
-                      Réserver
+                      style={{ backgroundColor: '#00A651', color: '#ffffff' }}>
+                      Reserver
                     </button>
                   </div>
 
